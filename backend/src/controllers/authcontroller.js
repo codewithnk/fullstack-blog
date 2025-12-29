@@ -36,7 +36,7 @@ export const login = asyncHandler(async (req, res) => {
   await user.save();
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: false, // true in production (HTTPS)
+    secure: false,
   });
   res.json({
     success: true,
