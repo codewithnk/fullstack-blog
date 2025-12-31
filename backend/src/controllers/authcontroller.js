@@ -48,3 +48,12 @@ export const login = asyncHandler(async (req, res) => {
     },
   });
 });
+
+export const logout = async (req, res) => {
+  res
+    .clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "strict",
+    })
+    .json({ message: "Logged out successfully" });
+};
