@@ -49,6 +49,11 @@ const postSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ["DRAFT", "PUBLISHED"],
+      default: "DRAFT",
+    },
   },
   { timestamps: true }
 );

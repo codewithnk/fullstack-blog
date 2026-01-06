@@ -2,50 +2,50 @@ import { ROLES } from "../constants/roles.js";
 import Post from "../models/postmodel.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-//Create Post
 export const createPost = asyncHandler(async (req, res) => {
   const post = await Post.create({
     ...req.body,
     author: req.user.id,
+    status: "DRAFT",
   });
-  res.status(201).json(Post);
+  res.status(201).json(post);
 });
 
-//Get All public Post
 export const getPosts = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, search = "" } = req.query;
   const query = {
-    isPublished: true,
-    title: {
-      $regex: search,
-      $option: "i",
-    },
+    status: "PUBLISHED",
+    title: { $regex: search, $options: "i" },
   };
   const posts = await Post.find(query)
     .populate("author", "name")
     .skip((page - 1) * limit)
     .limit(Number(limit))
     .sort({ createdAt: -1 });
-  res.json(posts);
+  const total = await Post.countDocuments(query);
+  res.json({
+    posts,
+    total,
+    page: Number(page),
+    pages: Math.ceil(total / limit),
+  });
 });
 
-//Updayed Post
 export const updatedPosts = asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.param.id);
+  const post = await Post.findById(req.params.id);
   if (!post) {
     res.status(404);
-    throw new Error("Post not Found");
+    throw new Error("Post not found");
   }
   if (post.author.toString() !== req.user.id && req.user.role !== ROLES.ADMIN) {
     res.status(403);
-    throw new Error("Not Allowed");
+    throw new Error("Not allowed");
   }
   Object.assign(post, req.body);
-  awaitpost.save();
+  await post.save();
   res.json(post);
 });
 
-// Delete Post
 export const deletePost = asyncHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
   if (!post) {
