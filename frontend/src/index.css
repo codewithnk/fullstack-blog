@@ -1,15 +1,5 @@
-@reference "tailwindcss";
+@import "tailwindcss";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer components {
-  .input {
-    @apply w-full px-4 py-2 border rounded focus:outline-none focus:ring;
-  }
-
-  .btn-primary {
-    @apply bg-black text-white py-2 rounded hover:bg-gray-800 transition;
-  }
-}

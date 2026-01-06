@@ -12,9 +12,9 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await logoutApi().unwrap(); // backend
-      dispatch(logout()); // frontend
-      toast.success("Logged out");
+      await logoutApi().unwrap();
+      dispatch(logout());
+      toast.success("Logged out successfully");
       navigate("/login");
     } catch {
       toast.error("Logout failed");
@@ -22,22 +22,51 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center p-4 border-b">
-      <Link to="/" className="font-bold">
+    <nav className="flex justify-between items-center px-6 py-4 border-b bg-white">
+      <Link to="/" className="text-2xl font-bold text-black">
         Blog
       </Link>
-
       {user ? (
-        <div className="flex gap-4 items-center">
-          <span>{user.email}</span>
-          <button onClick={handleLogout} className="text-red-600 font-medium">
+        <div className="flex items-center gap-6">
+          <Link
+            to="/dashboard"
+            className="font-medium hover:text-blue-600 transition"
+          >
+            Dashboard
+          </Link>
+          {(user.role === "AUTHOR" || user.role === "ADMIN") && (
+            <Link
+              to="/create-post"
+              className="font-medium hover:text-blue-600 transition"
+            >
+              Write
+            </Link>
+          )}
+          <span className="text-gray-600 text-sm hidden md:block">
+            {user.email}
+          </span>
+
+          <button
+            onClick={handleLogout}
+            className="text-red-600 font-medium hover:text-red-700 transition"
+          >
             Logout
           </button>
         </div>
       ) : (
-        <div className="flex gap-4">
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
+        <div className="flex gap-6">
+          <Link
+            to="/login"
+            className="font-medium hover:text-blue-600 transition"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="font-medium hover:text-blue-600 transition"
+          >
+            Register
+          </Link>
         </div>
       )}
     </nav>
