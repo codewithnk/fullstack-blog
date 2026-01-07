@@ -1,23 +1,18 @@
 import { Link } from "react-router-dom";
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, children }) => {
   return (
-    <div className="border rounded-lg p-4 hover:shadow transition">
-      <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-
-      <p className="text-gray-600 text-sm mb-4">{post.excerpt}</p>
-
-      <div className="flex justify-between text-sm text-gray-500">
-        <span>By {post.author?.name}</span>
-        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+    <div className="border rounded-lg p-4 flex flex-col justify-between">
+      <div>
+        <h2 className="text-lg font-semibold mb-2">{post.title}</h2>
+        <p className="text-sm text-gray-500 mb-2">
+          By {post.author?.name} · {new Date(post.createdAt).toDateString()}
+        </p>
+        <p className="text-gray-700 line-clamp-3">
+          {post.content.replace(/<[^>]+>/g, "")}
+        </p>
       </div>
-
-      <Link
-        to={`/posts/${post._id}`}
-        className="inline-block mt-4 text-blue-600 font-medium"
-      >
-        Read more →
-      </Link>
+      <div className="mt-4">{children}</div>
     </div>
   );
 };

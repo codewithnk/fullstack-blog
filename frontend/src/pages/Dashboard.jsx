@@ -13,7 +13,6 @@ const Dashboard = () => {
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this post?")) return;
-
     try {
       await deletePost(id).unwrap();
       toast.success("Post deleted");
@@ -26,11 +25,8 @@ const Dashboard = () => {
     try {
       await updatePost({
         id: post._id,
-        data: {
-          status: post.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED",
-        },
+        data: { status: post.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED" },
       }).unwrap();
-
       toast.success(
         post.status === "PUBLISHED" ? "Moved to Draft" : "Post Published"
       );
@@ -54,50 +50,24 @@ const Dashboard = () => {
       </div>
 
       {data.posts.length === 0 ? (
-        <p className="text-gray-500">No posts yet.</p>
+        <p>No posts yet</p>
       ) : (
         <div className="space-y-4">
           {data.posts.map((post) => (
             <div
               key={post._id}
-              className="border rounded-lg p-4 flex justify-between items-center"
+              className="border p-4 flex justify-between items-center"
             >
               <div>
-                <h2 className="font-semibold flex items-center gap-2">
-                  {post.title}
-                  <span
-                    className={`text-xs px-2 py-1 rounded ${
-                      post.status === "PUBLISHED"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {post.status}
-                  </span>
-                </h2>
-                <p className="text-sm text-gray-500">
-                  {new Date(post.createdAt).toDateString()}
-                </p>
+                <h2>{post.title}</h2>
+                <span>{post.status}</span>
               </div>
-
-              <div className="flex gap-4 items-center">
-                <button
-                  onClick={() => toggleStatus(post)}
-                  className="text-sm text-purple-600 hover:underline"
-                >
-                  {post.status === "PUBLISHED" ? "Unpublish" : "Publish"}
+              <div className="flex gap-2">
+                <button onClick={() => toggleStatus(post)}>
+                  Toggle Status
                 </button>
-
-                <Link to={`/edit-post/${post._id}`} className="text-blue-600">
-                  Edit
-                </Link>
-
-                <button
-                  onClick={() => handleDelete(post._id)}
-                  className="text-red-600"
-                >
-                  Delete
-                </button>
+                <Link to={`/edit-post/${post._id}`}>Edit</Link>
+                <button onClick={() => handleDelete(post._id)}>Delete</button>
               </div>
             </div>
           ))}

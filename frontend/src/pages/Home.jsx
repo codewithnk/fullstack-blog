@@ -1,38 +1,36 @@
 import { useState } from "react";
 import { useGetPostsQuery } from "../features/posts/postsApi";
-import PostCard from "../components/PostCard";
-import Pagination from "../components/Pagination";
+import { Link } from "react-router-dom";
 
 const Home = () => {
-  const [page, setPage] = useState(1);
-  const { data, isLoading, isError, error } = useGetPostsQuery({ page });
-  if (isLoading)
-    return <div className="text-center mt-20">Loading posts...</div>;
-  if (isError)
-    return (
-      <div className="text-center mt-10 text-red-600">
-        Error: {error?.data?.message || "Could not load posts"}
-      </div>
-    );
+  const { data, isLoading } = useGetPostsQuery({ page: 1 });
+
+  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
 
   const posts = data?.posts ?? [];
-  const totalPages = data?.totalPages ?? 1;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <h1 className="text-3xl font-bold mb-6">Latest Posts</h1>
-      {posts.length === 0 ? (
-        <p className="text-center py-16 text-gray-500">No posts found.</p>
-      ) : (
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <PostCard key={post._id} post={post} />
-          ))}
+
+      {posts.map((post) => (
+        <div key={post._id} className="border p-4 mb-4 rounded">
+          <h2 className="text-xl font-semibold">{post.title}</h2>
+          <p className="text-sm text-gray-500">
+            By {post.author.name} ·{" "}
+            {new Date(post.createdAt).toLocaleDateString()}
+          </p>
+          <p className="mt-2">
+            {post.content.slice(0, 100)}...
+            <Link
+              to={`/posts/${post._id}`}
+              className="text-blue-600 hover:underline ml-2"
+            >
+              Read More
+            </Link>
+          </p>
         </div>
-      )}
-      {totalPages > 1 && (
-        <Pagination page={page} totalPages={totalPages} setPage={setPage} />
-      )}
+      ))}
     </div>
   );
 };

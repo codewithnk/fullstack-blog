@@ -1,32 +1,36 @@
 import { useState } from "react";
 import { useCreatePostMutation } from "../features/posts/postsApi";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import RichEditor from "../components/editor/RichEditor";
+import { toast } from "react-toastify";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
-
+  const [status, setStatus] = useState("DRAFT"); // only admin can set PUBLISHED
   const [createPost] = useCreatePostMutation();
   const navigate = useNavigate();
 
+  const { user } = useSelector((state) => state.auth);
+
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!title || !content)
+      return toast.error("Title and content are required");
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    if (image) formData.append("image", image);
-
-    await createPost(formData).unwrap();
-    navigate("/dashboard");
+    try {
+      await createPost({ title, content, status }).unwrap();
+      toast.success("Post created successfully");
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to create post");
+    }
   };
 
   return (
     <div className="max-w-3xl mx-auto mt-10 px-4">
       <h1 className="text-2xl font-bold mb-6">Create Post</h1>
-
       <form onSubmit={submitHandler} className="space-y-4">
         <input
           type="text"
@@ -38,10 +42,20 @@ const CreatePost = () => {
 
         <RichEditor value={content} onChange={setContent} />
 
-        <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+        {/* Only admin can select status */}
+        {user.role === "ADMIN" && (
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="border px-2 py-1 rounded"
+          >
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+          </select>
+        )}
 
         <button className="bg-black text-white px-6 py-2 rounded">
-          Publish
+          Create Post
         </button>
       </form>
     </div>

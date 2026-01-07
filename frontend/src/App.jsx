@@ -17,7 +17,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/posts/:id" element={<PostDetail />} />
+        </Route>
         <Route element={<ProtectedRoute roles={["AUTHOR", "ADMIN"]} />}>
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/edit-post/:id" element={<EditPost />} />

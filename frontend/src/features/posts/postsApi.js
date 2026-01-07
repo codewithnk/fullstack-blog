@@ -5,7 +5,7 @@ export const postsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:5000/api",
     prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.user?.accessToken;
+      const token = getState().auth.accessToken;
       if (token) headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
@@ -13,8 +13,7 @@ export const postsApi = createApi({
   tagTypes: ["Posts"],
   endpoints: (builder) => ({
     getPosts: builder.query({
-      query: ({ page = 1, search = "" }) =>
-        `/posts?page=${page}&search=${search}`,
+      query: ({ page = 1 }) => `/posts?page=${page}`,
       providesTags: ["Posts"],
     }),
     getPostById: builder.query({
@@ -31,22 +30,22 @@ export const postsApi = createApi({
         method: "POST",
         body: postData,
       }),
-      providesTags: ["Posts"],
+      invalidatesTags: ["Posts"],
     }),
     updatePost: builder.mutation({
-      query: ({ id, postData }) => ({
+      query: ({ id, data }) => ({
         url: `/posts/${id}`,
         method: "PUT",
-        body: postData,
+        body: data,
       }),
-      providesTags: ["Posts"],
+      invalidatesTags: ["Posts"],
     }),
     deletePost: builder.mutation({
       query: (id) => ({
         url: `/posts/${id}`,
         method: "DELETE",
       }),
-      providesTags: ["Posts"],
+      invalidatesTags: ["Posts"],
     }),
   }),
 });
