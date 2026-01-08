@@ -9,6 +9,7 @@ import {
   getPostById,
   updatePost,
   deletePost,
+  getMyPosts,
 } from "../controllers/postcontroller.js";
 
 const router = express.Router();
@@ -17,7 +18,8 @@ const router = express.Router();
 router.get("/", getPosts);
 
 // Protected: Read post details
-router.get("/:id", optionalProtect, getPostById);
+router.get("/my", protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), getMyPosts);
+router.get("/:id", protect, getPostById);
 
 // Protected: Create post
 router.post("/", protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), createPost);
