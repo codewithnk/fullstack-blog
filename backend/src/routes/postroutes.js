@@ -14,20 +14,11 @@ import {
 
 const router = express.Router();
 
-// Public: Home Page
 router.get("/", getPosts);
-
-// Protected: Read post details
 router.get("/my", protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), getMyPosts);
 router.get("/:id", protect, getPostById);
-
-// Protected: Create post
 router.post("/", protect, authorize(ROLES.AUTHOR, ROLES.ADMIN), createPost);
-
-// Protected: Update
 router.put("/:id", protect, updatePost);
-
-// Protected: Delete
 router.delete("/:id", protect, deletePost);
 
 export default router;
