@@ -9,19 +9,17 @@ import {
 const EditPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const { data: post, isLoading } = useGetPostByIdQuery(id);
   const [updatePost, { isLoading: updating }] = useUpdatePostMutation();
-
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("DRAFT");
 
   useEffect(() => {
     if (post) {
-      setTitle(post.title);
-      setContent(post.content);
-      setStatus(post.status);
+      setTitle(post.title || "");
+      setContent(post.content || "");
+      setStatus(post.status || "DRAFT");
     }
   }, [post]);
 
@@ -31,7 +29,7 @@ const EditPost = () => {
     try {
       await updatePost({
         id,
-        body: { title, content, status }, // ✅ FIXED
+        body: { title, content, status },
       }).unwrap();
 
       toast.success("Post updated successfully");
@@ -54,34 +52,45 @@ const EditPost = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Edit Post</h1>
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded shadow">
+      <h1 className="text-2xl font-bold mb-6">Edit Post</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full border rounded px-3 py-2"
-          required
-        />
-
-        {/* Rich editor can be plugged back later */}
-        {/* <ReactQuill value={content} onChange={setContent} /> */}
-
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="border rounded px-3 py-2"
-        >
-          <option value="DRAFT">Draft</option>
-          <option value="PUBLISHED">Published</option>
-        </select>
-
+        <div>
+          <label className="block font-medium mb-1">Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Content</label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows="6"
+            className="w-full border rounded px-3 py-2"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Status</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+          >
+            <option value="DRAFT">Draft</option>
+            <option value="PUBLISHED">Published</option>
+          </select>
+        </div>
         <button
           type="submit"
           disabled={updating}
-          className="bg-black text-white px-4 py-2 rounded"
+          className="bg-black text-white px-6 py-2 rounded disabled:opacity-60"
         >
           {updating ? "Updating..." : "Update Post"}
         </button>
