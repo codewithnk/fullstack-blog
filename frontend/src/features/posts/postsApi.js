@@ -3,10 +3,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const postsApi = createApi({
   reducerPath: "postsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api",
+    baseUrl: `${import.meta.env.VITE_API_URL}/api`,
+    credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.accessToken;
-      if (token) headers.set("Authorization", `Bearer ${token}`);
+      const token = getState()?.auth?.accessToken;
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
       return headers;
     },
   }),
@@ -16,14 +19,17 @@ export const postsApi = createApi({
       query: ({ page = 1 }) => `/posts?page=${page}`,
       providesTags: ["Posts"],
     }),
+
     getPostById: builder.query({
       query: (id) => `/posts/${id}`,
       providesTags: (result, error, id) => [{ type: "Posts", id }],
     }),
+
     getMyPosts: builder.query({
       query: () => `/posts/my`,
       providesTags: ["Posts"],
     }),
+
     createPost: builder.mutation({
       query: (postData) => ({
         url: "/posts",
@@ -32,21 +38,20 @@ export const postsApi = createApi({
       }),
       invalidatesTags: ["Posts"],
     }),
+
     updatePost: builder.mutation({
       query: ({ id, body }) => ({
         url: `/posts/${id}`,
         method: "PUT",
         body,
       }),
-      invalidatesTags: ["Post"],
+      invalidatesTags: ["Posts"],
     }),
+
     deletePost: builder.mutation({
       query: (id) => ({
         url: `/posts/${id}`,
         method: "DELETE",
-      }),
-      getMyPosts: builder.query({
-        query: () => "/posts/my",
       }),
       invalidatesTags: ["Posts"],
     }),
