@@ -13,7 +13,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 const allowedOrigins = [
-  "http://localhost:5173",
   "https://fullstack-blog-1-n5qh.onrender.com",
 ];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
@@ -26,5 +25,4 @@ app.get("/api/testing", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
 });
 app.use(errorHandler);
-
 export default app;
