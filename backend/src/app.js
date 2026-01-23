@@ -7,6 +7,11 @@ import authRoutes from "./routes/authroutes.js";
 import postRoutes from "./routes/postroutes.js";
 import commentRoutes from "./routes/commentroutes.js";
 import adminRoutes from "./routes/adminroutes.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -27,11 +32,11 @@ app.get("/api/testing", (req, res) => {
 });
 
 
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "frontend/build")));
+app.use(express.static(path.join(__dirname, "../../frontend/build")));
+
 app.get("*", (req, res) => {
   res.sendFile(
-    path.join(__dirname, "frontend/build", "index.html")
+    path.join(__dirname, "../../frontend/build", "index.html")
   );
 });
 app.use(errorHandler);
