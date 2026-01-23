@@ -14,14 +14,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
+
 const allowedOrigins = [
   "https://fullstack-blog-1-n5qh.onrender.com",
 ];
-app.use(cors({ origin: allowedOrigins, credentials: true }));
 
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
@@ -30,14 +32,11 @@ app.use("/api/admin", adminRoutes);
 app.get("/api/testing", (req, res) => {
   res.json({ status: "OK", message: "Server is running" });
 });
-
-
-app.use(express.static(path.join(__dirname, "../../frontend/build")));
-
-app.use((req, res) => {
-  res.sendFile(
-    path.join(__dirname, "../../frontend/build", "index.html")
-  );
+const clientPath = path.join(__dirname, "../../frontend/dist");
+app.use(express.static(clientPath));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(clientPath, "index.html"));
 });
 app.use(errorHandler);
+
 export default app;
