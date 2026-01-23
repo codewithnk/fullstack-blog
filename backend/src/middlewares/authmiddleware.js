@@ -2,11 +2,20 @@ import jwt from "jsonwebtoken";
 import User from "../models/usermodel.js";
 
 export const protect = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer")) {
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+  if (!token && req.cookies?.accessToken) {
+    token = req.cookies.accessToken;
+  }
+  if (!token) {
     return res.status(401).json({ message: "Not authorized" });
   }
-  const token = authHeader.split(" ")[1];
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     const user = await User.findById(decoded.id);
@@ -20,7 +29,7 @@ export const protect = async (req, res, next) => {
       role: user.role,
     };
     next();
-  } catch {
+  } catch (error) {
     res.status(401).json({ message: "Token invalid or expired" });
   }
 };
